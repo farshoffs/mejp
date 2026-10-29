@@ -30,6 +30,7 @@ npx wrangler deploy
 
 ## Original binary research
 
-See [verified original MyJPJ APK inspection](docs/VERIFIED_FINDINGS.md) and the [original extractor](scripts/extract_original.py). The original APK, proprietary assets and credentials are not committed to this public repository.
+See [verified original MyJPJ APK inspection](docs/VERIFIED_FINDINGS.md), the [Ghidra + JADX analysis](docs/GHIDRA_JADX_ANALYSIS.md), and the [original extractor](scripts/extract_original.py). Reusable Ghidra export scripts live in `scripts/ghidra/`. The original APK, proprietary assets, certificates, raw disassembly and credentials are not committed to this public repository.
 
 MEJP is unaffiliated with Jabatan Pengangkutan Jalan Malaysia. Official site: https://www.jpj.gov.my/.
+
