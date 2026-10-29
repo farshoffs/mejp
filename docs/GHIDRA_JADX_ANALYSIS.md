@@ -10,6 +10,10 @@ This report records reproducible static-analysis results. It does **not** claim 
 
 - Ghidra 12.1.2 headless, AARCH64 little-endian, default compiler spec.
 - JADX 1.5.6, using JDK 21 against the base APK.
+- r2flutter 0.5.1 with radare2 6.2.4.
+- dae 0.1.14, app-only export with experimental Dart-like pseudocode.
+- AOTopsy 1.6.0, full metadata/call-graph analysis and app-only Dart export.
+- PyGhidra 3.1.0 applied the AOTopsy metadata to a separate Ghidra project.
 - Proprietary APKs, native libraries, bundled certificates, decoded assets, raw symbol dumps, and JADX output remain local and are excluded from Git.
 
 JADX processed 6,313 classes and completed with 59 decompilation errors. Decompiled Java is therefore approximate and should be checked against bytecode before relying on edge-case control flow.
@@ -54,6 +58,30 @@ Stock string analysis also recovered application breadcrumbs such as:
 - `PrivacyPolicy`
 
 These are names/paths embedded in compiled data, not recovered source files.
+
+## Dart-aware recovery pass
+
+r2flutter matched snapshot hash `78da37fed6bf1489361a312568249f3f` exactly to Dart 3.11.5. Its parsed header reported 1,186 VM objects, 200,318 isolate objects, 938 isolate clusters, and 32,143 isolate instruction-table entries. This exact-hash result supersedes earlier family-level estimates, while still not identifying one exact Flutter framework patch release.
+
+dae parsed the same binary without warnings and recovered the following app-side artifacts:
+
+| Artifact | Count |
+|---|---:|
+| App-side libraries | 846 |
+| App-side classes | 1,444 |
+| Named app-side functions | 7,510 |
+| Disassembled functions with IL | 6,936 |
+| Recovered named fields | 937 |
+| Object-pool entries | 42,442 |
+| Direct call edges | 64,310 |
+| Dart-like pseudocode blocks | 6,936 |
+| `package:myjpj` Dart-like output files | 281 |
+
+AOTopsy independently parsed 32,143 code entries and 5,892 class layouts. Its app-only exporter synthesized 11,823 methods across 1,340 classes into 846 Dart-like files. A separate PyGhidra project then created 24,693 functions, added 34,034 comments, and exported 497 selected decompilations; 71 selected functions failed decompilation.
+
+The two tools use different version profiles and reconstruction strategies, so their class/method totals are not directly equivalent. Their outputs agree on the snapshot topology and recover many of the same application library paths. All generated `.dart` files are pseudocode containing machine-level constructs, synthetic locals, reconstructed control flow, and unresolved indirect calls. They are analysis aids, not compilable original source.
+
+Recovered application-library paths describe modules including routing, login and registration, Keycloak/MyDigitalID flows, profile and digital licence views, vehicle licensing, summons and demerit enquiries, payments, inbox/notifications, directory services, e-Aduan, secure storage, Firebase Remote Config, OneSignal, Signet, and SarawakPay. This confirms client-side structure only; it does not recover server implementations or authorize reuse of private service contracts.
 
 ## `libflutter.so`: Flutter engine + Dart runtime
 
@@ -121,7 +149,7 @@ The generated registrant includes Android Intent, app settings, connectivity, Dy
 
 ## Blutter suitability
 
-Blutter is appropriate for this ARM64 `libapp.so` and can recover annotated assembly and object-pool information. It still does not recover the original Dart project. The inspected Windows machine did not have the required CMake/Visual C++ toolchain, WSL, Docker, Capstone, and ICU build prerequisites, so Blutter was not executed during this pass. Installing that toolchain would be a separate, heavyweight environment change.
+Blutter is appropriate for this ARM64 `libapp.so` and can recover annotated assembly and object-pool information. It still does not recover the original Dart project. The inspected Windows machine does not yet have the required CMake/Visual C++ toolchain, Capstone, and ICU build prerequisites, so Blutter was not executed. The r2flutter, dae, and AOTopsy passes now provide overlapping snapshot, object-pool, function, class, and pseudocode coverage without that heavyweight installation.
 
 ## Clean-room boundary
 
