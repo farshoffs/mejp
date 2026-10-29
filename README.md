@@ -1,40 +1,35 @@
-# MEJP — original MyJPJ 5.1.2 inspection workspace
+# MEJP — Rebuilt Web/PWA Prototype
 
-**This repository uses the actual original MyJPJ Android XAPK. It is not a UI recreation or clone.**
+**Live URL:** https://mejp.fscapitalmanagement.workers.dev/
 
-Verified source artifact: MyJPJ_5.1.2_APKPure.xapk, SHA-256 aa92685372b3fac5327eddcd3314f37c884ad794f16f19d6c4e392f71dfe948a.
+This is an **independent, unofficial prototype**, made by studying the module structure of a user-supplied MyJPJ 5.1.2 XAPK. It is **not** the exact original Flutter project, a JPJ-certified application, or a replacement for the official MyJPJ Android app.
 
-## Run original extraction
+## Features available
 
-    python scripts/extract_original.py /path/to/MyJPJ_5.1.2_APKPure.xapk --out ./workbench
+- Installable mobile-first progressive web app (PWA), responsive desktop view and offline cache.
+- Dashboard, licence preview, vehicles/e-LKM workspace, summons and KEJARA integration status, e-VOC status, directory link, e-Aduan notes and profile/settings.
+- Add/remove personal vehicle entries; write/remove complaint drafts; customise display name and theme; export/reset browser-local data.
+- Dedicated clearly labelled nonofficial demo UI throughout. All data stays in your browser; no NRIC, official credentials or payments are requested.
+- Cloudflare Worker edge deployment with strict path routing, security headers, and health endpoint.
 
-Results are byte-identical original signed APK splits under workbench/apks, original bundled Flutter assets in workbench/flutter_assets, original libraries in workbench/native, and checksum inventory in workbench/analysis/inventory.json.
+## Important limitation
 
-## Install the actual original app
+The original XAPK includes compiled Flutter AOT code and resources, **not source files or JPJ backend credentials/servers**. The official MyJPJ login, real licence data, summons verification, road-tax renewals, payments, QR verification and government back-office transactions cannot be reimplemented without authorized official integration. This prototype does not impersonate these functions or show fake verification results.
 
-Use Android platform-tools and an ARM64-compatible device. Extract first, then run:
+## Development
 
-    adb install-multiple workbench/apks/com.jpj.jpj_info.apk workbench/apks/config.arm64_v8a.apk workbench/apks/config.en.apk workbench/apks/config.mdpi.apk workbench/apks/config.zh.apk
+Edit `web/index.html`, `web/sw.js`, `web/manifest.webmanifest`, or `web/icon.svg`.
 
-This installs original signed binaries. Nothing in this workspace is repackaged or re-signed.
+```bash
+npm run build
+npx wrangler dev
+npx wrangler deploy
+```
 
-## Can we recover exact source?
+`npm run build` generates `src/index.js` using `scripts/build.mjs`, which embeds the static files into a single Cloudflare Worker. Deployment config in `wrangler.jsonc`. `GET /api/health` returns app mode and status.
 
-**No.** The compiled Flutter/Dart release application lives in libapp.so. Its original Dart source code, comments, build configuration, signing keys, and JPJ backend are not present in the distributed XAPK. Static reverse engineering can recover artifacts, partial structure and pseudocode; any claim to have recovered the exact original Flutter source from this release would be false.
+## Original binary research
 
-If your objective is to run the exact app, these original APKs are already the exact thing. If your objective is to edit and rebuild it, that necessarily involves reconstruction and cannot guarantee a bit-identical or fully functional rebuild.
+See [verified original MyJPJ APK inspection](docs/VERIFIED_FINDINGS.md) and the [original extractor](scripts/extract_original.py). The original APK, proprietary assets and credentials are not committed to this public repository.
 
-## Scope
-
-- Original: MyJPJ, Android package com.jpj.jpj_info
-- Release: 5.1.2 (1174)
-- Base APK: 74,927,192 bytes, 829 ZIP entries
-- ARM64 split: 35,775,744 bytes, 12 native libraries
-- Flutter assets: 423 files, including 361 image files
-- Native Dart library: lib/arm64-v8a/libapp.so, 12,125,104 bytes
-
-See docs/VERIFIED_FINDINGS.md for file hashes and methodology.
-
-Only scripts and observations belong in this public repository. Do **not** commit third-party app binaries, packaged images, user identities, API tokens, private keys or certificates without proper permission.
-
-Unofficial research workspace; not affiliated with JPJ.
+MEJP is unaffiliated with Jabatan Pengangkutan Jalan Malaysia. Official site: https://www.jpj.gov.my/.
