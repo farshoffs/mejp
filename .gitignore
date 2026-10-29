@@ -1,0 +1,25 @@
+# Sensitive, proprietary, and binary app artifacts must stay local
+*.apk
+*.xapk
+*.aab
+*.apks
+*.so
+*.dex
+*.jks
+*.keystore
+*.p12
+*.pem
+*.key
+workbench/
+extracted/
+artifacts/
+original_apks/
+original_assets/
+native/
+jadx-output/
+apktool-output/
+blutter-output/
+flutterdec-output/
+__pycache__/
+*.pyc
+.DS_Store
